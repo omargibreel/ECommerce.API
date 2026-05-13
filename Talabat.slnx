@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/ApplicationCoreLayer/">
+    <Project Path="Talabat.Domain/Talabat.Domain.csproj" />
+    <Project Path="Talabat.Services.Abstraction/Talabat.Services.Abstraction.csproj" />
+    <Project Path="Talabat.Services.Implementation/Talabat.Services.Implementation.csproj" />
+  </Folder>
+  <Folder Name="/InfrastructureLayer/">
+    <Project Path="Talabat.Persistence/Talabat.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/PresentationLayer/">
+    <Project Path="Talabat.API/Talabat.API.csproj" />
+    <Project Path="Talabat.Presentation/Talabat.Presentation.csproj" />
+  </Folder>
+  <Project Path="Talabat.Shared/Talabat.Shared.csproj" />
+</Solution>

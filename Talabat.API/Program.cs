@@ -1,16 +1,21 @@
-
 using Microsoft.EntityFrameworkCore;
+using Talabat.API.Extensions;
+using Talabat.Domain.Contracts;
 using Talabat.Persistence.Data.Context;
+using Talabat.Persistence.Data.DataSeed;
+using Talabat.Persistence.Repositories;
+using Talabat.Services.Abstraction;
+using Talabat.Services.Implementation;
 
 namespace Talabat.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            #region Register DI Container
+            #region Register DI Container [Register Services]
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -25,9 +30,19 @@ namespace Talabat.API
                     builder.Configuration.GetConnectionString("DefaultConnection")
                 );
             });
+
+            builder.Services.AddScoped<IDataInitializer, DataInitializer>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            builder.Services.AddAutoMapper(typeof(ServiceAssemblyReference).Assembly);
+
+            builder.Services.AddScoped<IProductService, ProductService>();
             #endregion
 
             var app = builder.Build();
+
+            await app.MigrateDataBaseAsync();
+            await app.SeedDataAsync();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -43,7 +58,7 @@ namespace Talabat.API
 
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }

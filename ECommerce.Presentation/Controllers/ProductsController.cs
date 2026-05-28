@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using ECommerce.Services.Abstraction;
 using ECommerce.Shared.DTOs.ProductDTOs;
+using ECommerce.Shared;
 
 namespace ECommerce.Presentation.Controllers
 {
@@ -20,9 +21,9 @@ namespace ECommerce.Presentation.Controllers
 
         [HttpGet]
         // GET: baseUrl/api/products
-        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts()
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts([FromQuery]ProductQueryParams queryParams) 
         {
-            var products = await _productService.GetAllProductsAsync();
+            var products = await _productService.GetAllProductsAsync(queryParams);
             return Ok(products);
         }
 

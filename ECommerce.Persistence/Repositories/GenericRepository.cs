@@ -8,8 +8,8 @@ using ECommerce.Persistence.Data.Context;
 
 namespace ECommerce.Persistence.Repositories
 {
-    public class GenericRepository<TEntity, TKey> 
-        : IGenericRepository<TEntity, TKey> 
+    public class GenericRepository<TEntity, TKey>
+        : IGenericRepository<TEntity, TKey>
         where TEntity : BaseEntity<TKey>
     {
         private readonly StoreDbContext _context;
@@ -21,7 +21,15 @@ namespace ECommerce.Persistence.Repositories
 
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-           return await _context.Set<TEntity>().ToListAsync();
+            return await _context.Set<TEntity>().ToListAsync();
+        }
+
+        public async Task<IEnumerable<TEntity>> GetAllAsync(ISpecifications<TEntity, TKey> specifications)
+        {
+            var query = SpecificationEvaluator.GetQuery(_context.Set<TEntity>(), specifications);
+
+
+            return await query.ToListAsync();
         }
 
         public async Task<TEntity?> GetByIdAsync(TKey id)
@@ -42,6 +50,12 @@ namespace ECommerce.Persistence.Repositories
         public void Delete(TEntity entity)
         {
             _context.Set<TEntity>().Remove(entity);
+        }
+
+        public async Task<TEntity?> GetByIdAsync(ISpecifications<TEntity, TKey> specifications)
+        {
+            var query = SpecificationEvaluator.GetQuery(_context.Set<TEntity>(), specifications);
+            return await query.FirstOrDefaultAsync();
         }
     }
 }

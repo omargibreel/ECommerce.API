@@ -17,7 +17,8 @@ namespace ECommerce.Services.Implementation.MappingProfiles
                 opt => opt.MapFrom(
                     src => src.ProductBrand.Name))
                 .ForMember(dest => dest.ProductType,
-                opt => opt.MapFrom(src => src.ProductCategory.Name));
+                opt => opt.MapFrom(src => src.ProductCategory.Name))
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<ProductPictureUrlResolver>());
 
             CreateMap<ProductBrand, BrandDTO>();
 

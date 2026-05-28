@@ -6,6 +6,7 @@ using ECommerce.Persistence.Data.DataSeed;
 using ECommerce.Persistence.Repositories;
 using ECommerce.Services.Abstraction;
 using ECommerce.Services.Implementation;
+using ECommerce.Services.Implementation.MappingProfiles;
 
 namespace ECommerce.API
 {
@@ -34,7 +35,9 @@ namespace ECommerce.API
             builder.Services.AddScoped<IDataInitializer, DataInitializer>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            builder.Services.AddAutoMapper(cfg => { },typeof(ServiceAssemblyReference).Assembly);
+            builder.Services.AddAutoMapper(typeof(ServiceAssemblyReference).Assembly);
+            //builder.Services.AddTransient<ProductPictureUrlResolver>();
+
 
             builder.Services.AddScoped<IProductService, ProductService>();
             #endregion
@@ -50,6 +53,7 @@ namespace ECommerce.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.MapStaticAssets();
 
             app.UseHttpsRedirection();
 

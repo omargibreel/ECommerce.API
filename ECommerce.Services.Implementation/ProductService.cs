@@ -28,11 +28,22 @@ namespace ECommerce.Services.Implementation
             return _mapper.Map<ProductDTO>(product);
         }
 
-        public async Task<IEnumerable<ProductDTO>> GetAllProductsAsync(ProductQueryParams queryParams)
+        public async Task<PaginatedResult<ProductDTO>> GetAllProductsAsync(ProductQueryParams queryParams)
         {
+            var repo = _unitOfWork.GetRepository<Product, int>();
             var specification = new ProductWithBrandAndCategorySpecification(queryParams);
-            var products = await _unitOfWork.GetRepository<Product, int>().GetAllAsync(specification);
-            return _mapper.Map<IEnumerable<ProductDTO>>(products);
+            var products = await repo.GetAllAsync(specification);
+            var data = _mapper.Map<IEnumerable<ProductDTO>>(products);
+
+            var productWithCountSpecification = new ProductWithCountSpecification(queryParams);
+            var totalCount = await repo.CountAsync(productWithCountSpecification);
+            return new PaginatedResult<ProductDTO>
+            {
+                PageIndex = queryParams.PageIndex,
+                PageSize = data.Count(),
+                Count = totalCount,
+                Data = data
+            };
         }
 
         public async Task<IEnumerable<TypeDTO>> GetAllTypesAsync()

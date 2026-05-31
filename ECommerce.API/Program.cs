@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using ECommerce.API.Extensions;
 using ECommerce.Domain.Contracts;
 using ECommerce.Persistence.Data.Context;
@@ -7,6 +6,11 @@ using ECommerce.Persistence.Repositories;
 using ECommerce.Services.Abstraction;
 using ECommerce.Services.Implementation;
 using ECommerce.Services.Implementation.MappingProfiles;
+using ECommerce.Shared;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 namespace ECommerce.API
 {
@@ -19,8 +23,12 @@ namespace ECommerce.API
             #region Register DI Container [Register Services]
             // Add services to the container.
 
-            builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    // This converts enums to strings globally in your API responses and Swagger
+                    options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+                });            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             //builder.Services.AddOpenApi();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -40,6 +48,24 @@ namespace ECommerce.API
 
 
             builder.Services.AddScoped<IProductService, ProductService>();
+
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")!);
+            });
+
+
+
+            // FluentValidation Integration
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddValidatorsFromAssembly(
+                typeof(SharedAssemblyReference).Assembly
+            );
+
+            builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+            builder.Services.AddScoped<IBasketService, BasketService>();
+            builder.Services.AddScoped<ICacheRepository, CacheRepository>();
+            builder.Services.AddScoped<ICacheService, CacheService>();
             #endregion
 
             var app = builder.Build();

@@ -9,7 +9,7 @@ namespace ECommerce.Persistence
 {
     internal static class SpecificationEvaluator
     {
-        public static IQueryable<TEntity> GetQuery<TEntity, TKey>(IQueryable<TEntity> entiryQuery, ISpecifications<TEntity, TKey> specifications) where TEntity : BaseEntity<TKey>
+        public static IQueryable<TEntity> CreateQuery<TEntity, TKey>(IQueryable<TEntity> entiryQuery, ISpecifications<TEntity, TKey> specifications) where TEntity : BaseEntity<TKey>
         {
             var query = entiryQuery;
             if (specifications != null)
@@ -22,6 +22,18 @@ namespace ECommerce.Persistence
                 {
                     query = specifications.IncludeExpressions.Aggregate(query, (current, include)
                                                               => current.Include(include));
+                }
+                if (specifications.OrderBy != null)
+                {
+                    query = query.OrderBy(specifications.OrderBy);
+                }
+                if (specifications.OrderByDescending != null)
+                {
+                    query = query.OrderByDescending(specifications.OrderByDescending);
+                }
+                if(specifications.IsPaginated)
+                {
+                    query = query.Skip(specifications.Skip).Take(specifications.Take);
                 }
             }
 

@@ -10,12 +10,31 @@ namespace ECommerce.Services.Implementation.Specifications.ProductSpecifications
     internal class ProductWithBrandAndCategorySpecification : BaseSpecifications<Product, int>
     {
         public ProductWithBrandAndCategorySpecification(ProductQueryParams queryParams)
-            : base(p => (!queryParams.BrandId.HasValue || p.ProductBrandId == queryParams.BrandId.Value)
-            && (!queryParams.CategoryId.HasValue || p.ProductCategoryId == queryParams.CategoryId.Value)
-            && (string.IsNullOrEmpty(queryParams.Search) || p.Name.ToLower().Contains(queryParams.Search.ToLower())))
+            : base(ProductSpecificationsHelper.GetCriteria(queryParams))
         {
             AddInclude(p => p.ProductBrand);
             AddInclude(p => p.ProductCategory);
+
+
+            switch (queryParams.Sort)
+            {
+                case ProductSortingOptions.NameAsc:
+                    AddOrderBy(p => p.Name);
+                    break;
+                case ProductSortingOptions.NameDesc:
+                    AddOrderByDescending(p => p.Name);
+                    break;
+                case ProductSortingOptions.PriceAsc:
+                    AddOrderBy(p => p.Price);
+                    break;
+                case ProductSortingOptions.PriceDesc:
+                    AddOrderByDescending(p => p.Price);
+                    break;
+                default:
+                    AddOrderBy(p => p.Id);
+                    break;
+            }
+            ApplyPagination(queryParams.PageSize, queryParams.PageIndex);
         }
         public ProductWithBrandAndCategorySpecification(int id) : base(p => p.Id == id)
         {

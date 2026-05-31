@@ -1,4 +1,4 @@
-﻿using ECommerce.Domain.Models;
+﻿ using ECommerce.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -10,5 +10,10 @@ namespace ECommerce.Domain.Contracts
     {
         ICollection<Expression<Func<TEntity,object>>> IncludeExpressions { get; } 
         Expression<Func<TEntity,bool>> Criteria { get; } //Filter
+        Expression<Func<TEntity, object>> OrderBy { get; }
+        Expression<Func<TEntity, object>> OrderByDescending { get; }
+        int Skip { get; }
+        int Take { get; }
+        bool IsPaginated { get; }
     }
 }

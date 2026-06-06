@@ -8,6 +8,7 @@ using ECommerce.Services.Abstraction;
 using ECommerce.Shared.DTOs.ProductDTOs;
 using ECommerce.Services.Implementation.Specifications.ProductSpecifications;
 using ECommerce.Shared;
+using ECommerce.Services.Implementation.Exceptions;
 
 namespace ECommerce.Services.Implementation
 {
@@ -25,6 +26,11 @@ namespace ECommerce.Services.Implementation
         {
             var specification = new ProductWithBrandAndCategorySpecification(id);
             var product = await _unitOfWork.GetRepository<Product, int>().GetByIdAsync(specification);
+
+            if (product == null)
+            {
+                throw new NotFoundException("Product", id);
+            }
             return _mapper.Map<ProductDTO>(product);
         }
 

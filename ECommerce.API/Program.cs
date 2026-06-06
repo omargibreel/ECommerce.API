@@ -1,4 +1,6 @@
+using ECommerce.API.CustomMiddlewares;
 using ECommerce.API.Extensions;
+using ECommerce.API.Factories;
 using ECommerce.Domain.Contracts;
 using ECommerce.Persistence.Data.Context;
 using ECommerce.Persistence.Data.DataSeed;
@@ -9,6 +11,7 @@ using ECommerce.Services.Implementation.MappingProfiles;
 using ECommerce.Shared;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 
@@ -66,6 +69,13 @@ namespace ECommerce.API
             builder.Services.AddScoped<IBasketService, BasketService>();
             builder.Services.AddScoped<ICacheRepository, CacheRepository>();
             builder.Services.AddScoped<ICacheService, CacheService>();
+
+
+
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationResult;
+            }); 
             #endregion
 
             var app = builder.Build();
@@ -74,6 +84,9 @@ namespace ECommerce.API
             await app.SeedDataAsync();
 
             // Configure the HTTP request pipeline.
+
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

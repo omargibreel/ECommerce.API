@@ -15,6 +15,7 @@ namespace ECommerce.Domain.Contracts
         Task AddAsync(TEntity entity); // we make it async because sometimes efCore make checks in database table checks identity value internally
         void Update(TEntity entity); // this works locally in memory and when we call save changes it will update the database
         void Delete(TEntity entity); // this works locally in memory and when we call save changes it will update the database
+        Task<int> CountAsync(ISpecifications<TEntity, TKey> specifications);
     }
 }
 

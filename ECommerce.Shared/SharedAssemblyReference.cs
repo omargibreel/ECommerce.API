@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ECommerce.Services.Implementation
+namespace ECommerce.Shared
 {
-    public class ServiceAssemblyReference
+    public class SharedAssemblyReference
     {
     }
 }

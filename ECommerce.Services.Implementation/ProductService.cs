@@ -9,6 +9,7 @@ using ECommerce.Shared.DTOs.ProductDTOs;
 using ECommerce.Services.Implementation.Specifications.ProductSpecifications;
 using ECommerce.Shared;
 using ECommerce.Services.Implementation.Exceptions;
+using ECommerce.Shared.CommonResponses;
 
 namespace ECommerce.Services.Implementation
 {
@@ -22,15 +23,14 @@ namespace ECommerce.Services.Implementation
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<ProductDTO?> GetProductByIdAsync(int id)
+        public async Task<Result<ProductDTO>?> GetProductByIdAsync(int id)
         {
             var specification = new ProductWithBrandAndCategorySpecification(id);
             var product = await _unitOfWork.GetRepository<Product, int>().GetByIdAsync(specification);
 
             if (product == null)
-            {
-                throw new NotFoundException("Product", id);
-            }
+                return Error.NotFound("Product.NotFound", $"Product with id {id} not found.");
+            
             return _mapper.Map<ProductDTO>(product);
         }
 
